@@ -1,0 +1,28 @@
+{
+  "_comment": "Слей этот блок hooks в свой ~/.claude/settings.json. PreToolUse/PostToolUse кормят continuous-learning (захват наблюдений), SessionStart вливает выученные инстинкты обратно в сессию. Если у тебя уже есть hooks — добавь элементы в существующие массивы, не затирай.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "~/.claude/homunculus/capture-guard.sh pre" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "*",
+        "hooks": [
+          { "type": "command", "command": "~/.claude/homunculus/capture-guard.sh post" }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": "~/.claude/homunculus/recall-instincts.sh" }
+        ]
+      }
+    ]
+  }
+}

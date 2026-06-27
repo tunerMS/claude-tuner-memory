@@ -1,0 +1,24 @@
+# venv / индексы / кэши
+.venv/
+.venv-test/
+.index/
+graph/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# артефакты выполнения / логи
+*.log
+launchd.out.log
+launchd.err.log
+
+# СЕКРЕТЫ И ЛИЧНЫЕ ДАННЫЕ — никогда не коммитим
+graphify.env
+.env
+exclude_paths
+observations.jsonl
+observations.archive/
+instincts/
+processed.json
+# любые реальные файлы памяти (публикуем только шаблоны/примеры)
+**/projects/**/memory/

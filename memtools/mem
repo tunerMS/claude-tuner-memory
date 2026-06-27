@@ -1,0 +1,6 @@
+#!/bin/bash
+# Обёртка над memtools CLI: фиксирует venv и PYTHONPATH.
+#   ~/.claude/memory-tools/mem recall "консьюмер оффсеты лаг"
+#   ~/.claude/memory-tools/mem index | lifecycle | link | maintain | graphify
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec env PYTHONPATH="$DIR" "$DIR/.venv/bin/python" -m memtools.cli "$@"
