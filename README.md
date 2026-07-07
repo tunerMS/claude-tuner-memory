@@ -13,7 +13,7 @@ It bundles three subsystems that turn Claude Code's flat file-memory into someth
 | Subsystem | What it does | Cost |
 |---|---|---|
 | **memtools** | Semantic recall + lifecycle + auto-linking + optional knowledge graph over your memory files | Local, free |
-| **harvester** | Distills finished session transcripts into per-project recall files | Uses `claude` CLI (cheap) |
+| **harvester** | Distills finished session transcripts into per-project recall files, auto-injected at the next session start in that repo | Uses `claude` CLI (cheap) |
 | **homunculus** | Observes sessions via hooks, distills repeated patterns into "instincts" recalled at session start | Uses `claude` CLI (cheap) |
 | **memory-convention** | The one-fact-per-file Markdown format everything builds on (drop into your `CLAUDE.md`) | — |
 
@@ -44,6 +44,8 @@ mem maintain           # index + lifecycle + link (what the launchd agent runs e
         │                                          ▼
         │                                    instincts/personal/*.md
         │   SessionStart hook ◀── recall-instincts.sh ──┘  (injects learned prefs)
+        │   SessionStart hook ◀── session-context.sh ◀── sessions/<project>.md  (last-work context)
+        │   PostToolUse(Bash) ──▶ testrun-capture.sh ──▶ memory-testruns/<repo>.log (test-run history)
         │
         └── transcript .jsonl ──▶ harvester: launchd every 15m (claude CLI)
                                        │

@@ -17,11 +17,12 @@ rm -rf "${CLAUDE}/memory-tools/memtools" "${CLAUDE}/memory-tools/tests" \
        "${CLAUDE}/memory-tools/"{mem,maintain.sh,pyproject.toml}
 rm -f "${CLAUDE}/harvester/"{harvest.py,harvester.py,sweep.py,sweep.sh}
 rm -f "${CLAUDE}/homunculus/"{capture-guard.sh,recall-instincts.sh,analyze.sh,_capture.py,_write_instincts.py}
+rm -f "${CLAUDE}/hooks/"{session-context.sh,testrun-capture.sh}
 
 if [ "$PURGE" -eq 1 ]; then
   echo "[!] --purge-data: удаляю наблюдения/инстинкты/состояние harvester"
   rm -rf "${CLAUDE}/homunculus/instincts" "${CLAUDE}/homunculus/observations"* \
-         "${CLAUDE}/harvester/processed.json"
+         "${CLAUDE}/harvester/processed.json" "${CLAUDE}/memory-testruns"
   echo "    (файлы памяти ~/.claude/projects/*/memory НЕ тронуты — удали вручную при желании)"
 fi
 echo "Готово. Не забудь убрать блок hooks из ~/.claude/settings.json."

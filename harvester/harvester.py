@@ -57,6 +57,9 @@ def summarize(digest, hint):
     out = subprocess.run(
         ["claude", "--model", MODEL, "--print", "--max-turns", "1", prompt],
         capture_output=True, text=True, timeout=240,
+        # CC_BACKGROUND: SessionStart/PostToolUse-хуки (session-context,
+        # testrun-capture) по этому флагу пропускают фоновые вызовы claude
+        env={**os.environ, "CC_BACKGROUND": "1"},
     )
     txt = (out.stdout or "").strip()
     m = re.search(r'\{.*\}', txt, re.S)

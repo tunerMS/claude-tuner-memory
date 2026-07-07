@@ -72,6 +72,11 @@ if [ "$MEMTOOLS_ONLY" -eq 0 ]; then
     warn "отредактируй ${CLAUDE}/homunculus/exclude_paths — добавь свои приватные репо"
   fi
 
+  say "session-хуки → ${CLAUDE}/hooks"
+  mkdir -p "${CLAUDE}/hooks"
+  cp "${REPO}/hooks/"{session-context.sh,testrun-capture.sh} "${CLAUDE}/hooks/"
+  chmod +x "${CLAUDE}/hooks/"{session-context.sh,testrun-capture.sh}
+
   if [ "$(uname)" = "Darwin" ]; then
     sed "s#@HOME@#${HOME_DIR}#g" "${REPO}/launchd/com.harvester.sweep.plist.template" \
       > "${HOME_DIR}/Library/LaunchAgents/com.harvester.sweep.plist"
