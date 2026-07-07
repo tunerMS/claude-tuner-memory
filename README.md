@@ -133,7 +133,7 @@ cd ~/.claude/memory-tools && PYTHONPATH=. .venv/bin/pytest -q
 
 ## Changelog
 
-Human-readable release notes live in [CHANGELOG.md](CHANGELOG.md).
+Human-readable release notes live in [CHANGELOG.md](CHANGELOG.md) (in Russian, like the rest of the helper docs).
 
 ## License
 

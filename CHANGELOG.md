@@ -1,27 +1,27 @@
 # Changelog
 
-What changed and why it matters, newest first. Written for humans — see `git log` for the mechanical details.
+Что поменялось и зачем — простым языком, свежее сверху. Механические подробности — в `git log`.
 
 ## 2026-07-07
 
-### Added
+### Добавлено
 
-- **Your last session's context now loads itself.** A new SessionStart hook ([hooks/session-context.sh](hooks/session-context.sh)) figures out which project you just opened Claude Code in and injects the "🔖 current state" block from that project's harvested session memory — the "so, where did we leave off?" question answers itself. Worktree checkouts resolve to the real repo name, and if the exact project has no memory file yet, you get a compact index of the projects that do instead of a wrong guess.
-- **Test runs are remembered between sessions.** A new PostToolUse hook ([hooks/testrun-capture.sh](hooks/testrun-capture.sh)) spots gradle/pytest result lines in command output and keeps the last 30 per repository in `~/.claude/memory-testruns/<repo>.log`. The next session in that repo starts with your recent test results already on screen — handy for "was the suite green when I stopped yesterday?"
-- **Learned instincts stop multiplying.** The homunculus analyzer now shows the model the instincts it already knows (id + trigger). When a freshly observed pattern is really an old habit under a new wording, the existing instinct's confidence grows instead of a near-duplicate slug appearing (`bash-tail-limit` next to `cap-bash-output`, etc.). Such confidence bumps update two frontmatter fields in place and never touch the instinct's text, and an unknown id arriving without content is skipped rather than written as an empty stub.
+- **Контекст прошлой сессии подгружается сам.** Новый SessionStart-хук ([hooks/session-context.sh](hooks/session-context.sh)) определяет, в каком проекте ты открыл Claude Code, и сам вливает блок «🔖 Текущее состояние» из session-memory этого проекта — вопрос «так, на чём мы остановились?» отвечает сам на себя. Git worktree разрешается в настоящее имя репозитория, а если у проекта ещё нет файла памяти — вместо неверной догадки показывается компактный список проектов, у которых он есть.
+- **Тест-прогоны запоминаются между сессиями.** Новый PostToolUse-хук ([hooks/testrun-capture.sh](hooks/testrun-capture.sh)) ловит сводки gradle/pytest в выводе команд и держит последние 30 на каждый репозиторий в `~/.claude/memory-testruns/<repo>.log`. Следующая сессия в этом репо начинается с уже видимыми результатами последних прогонов — удобно для «а сьют был зелёный, когда я вчера закончил?».
+- **Выученные инстинкты перестали размножаться.** Анализатор homunculus теперь показывает модели уже известные инстинкты (id + триггер). Если «новый» паттерн — это старая привычка в другой формулировке, растёт уверенность существующего инстинкта, а не появляется слаг-клон (`bash-tail-limit` рядом с `cap-bash-output` и т.п.). Такой бамп обновляет два поля frontmatter на месте и не трогает текст инстинкта, а незнакомый id без содержимого пропускается, вместо того чтобы записаться пустышкой.
 
-### Changed
+### Изменено
 
-- Homunculus analysis runs every **30 minutes instead of every 5**. Observations accumulate and are distilled in batches anyway, so this only cuts idle wake-ups and `claude` CLI spend — nothing is lost.
-- Session-start instinct recall is capped at the **top 25 by confidence** (was 40) — roughly 10 KB of injected context instead of 24 KB.
-- The harvester marks its own background `claude` calls with `CC_BACKGROUND=1`, and both new hooks honor that flag — automated distillation runs no longer trigger the session hooks meant for you.
-- `install.sh` / `uninstall.sh` now place and remove the two new hooks; `uninstall.sh --purge-data` also clears the test-run logs.
+- Анализ homunculus запускается **раз в 30 минут вместо 5**. Наблюдения всё равно копятся и дистиллируются пачкой, так что это экономит холостые пробуждения и вызовы `claude` CLI — не теряя ничего.
+- Recall инстинктов на старте сессии ограничен **топ-25 по уверенности** (было 40) — примерно 10 КБ инжектируемого контекста вместо 24.
+- Harvester помечает свои фоновые вызовы `claude` флагом `CC_BACKGROUND=1`, и оба новых хука его уважают — автоматические дистилляции больше не дёргают хуки, предназначенные для живых сессий.
+- `install.sh` / `uninstall.sh` раскладывают и убирают оба новых хука; `uninstall.sh --purge-data` чистит и логи тест-прогонов.
 
-## 2026-06-27 — Initial release
+## 2026-06-27 — Первый релиз
 
-The self-hosted memory setup for Claude Code: local, offline, plain Markdown.
+Self-hosted память для Claude Code: локально, оффлайн, обычный Markdown.
 
-- **memtools** — the semantic layer over your memory files: `mem recall` (find relevant chunks without reading 100 KB files whole), `mem lifecycle` (flag stale and near-duplicate notes — never deletes), `mem link` (auto-maintained `[[wikilinks]]` between related notes), `mem graphify` (optional knowledge graph, opt-in). Local multilingual embeddings, no cloud, no database.
-- **harvester** — distills finished session transcripts into per-project "current state + journal" recall files.
-- **homunculus** — observes sessions via hooks and turns repeated habits into "instincts" re-injected at session start, with a denylist for sensitive repos.
-- **memory-convention** — the one-fact-per-file Markdown format everything builds on, plus an installer, uninstaller, and launchd templates for the three background agents.
+- **memtools** — семантический слой над файлами памяти: `mem recall` (найти релевантные куски, не читая 100-КБ файлы целиком), `mem lifecycle` (пометить протухшие и почти-дублирующиеся заметки — никогда не удаляет), `mem link` (авто-поддерживаемые `[[wikilinks]]` между связанными заметками), `mem graphify` (опциональный граф знаний, включается вручную). Локальные мультиязычные эмбеддинги, без облака и без базы данных.
+- **harvester** — сжимает транскрипты завершённых сессий в recall-файлы по проектам: «текущее состояние + журнал».
+- **homunculus** — наблюдает за сессиями через хуки и превращает повторяющиеся привычки в «инстинкты», вливаемые на старте сессии; денилист для чувствительных репозиториев.
+- **memory-convention** — формат «один факт — один Markdown-файл», на котором всё построено, плюс инсталлер, деинсталлер и launchd-шаблоны трёх фоновых агентов.
