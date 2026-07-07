@@ -6,6 +6,8 @@ It bundles three subsystems that turn Claude Code's flat file-memory into someth
 
 > Inline code comments and helper docs are in Russian; this README is in English. The tooling itself is language-agnostic and the embedding model is multilingual.
 
+**Why & what you get** — the human-oriented overview (problem → five effects → principles, in Russian): [docs/OVERVIEW.md](docs/OVERVIEW.md).
+
 ---
 
 ## What's inside
