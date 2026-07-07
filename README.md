@@ -40,7 +40,7 @@ mem maintain           # index + lifecycle + link (what the launchd agent runs e
  Claude Code session
         │
         ├── hooks (PreToolUse/PostToolUse) ──▶ homunculus: observations.jsonl
-        │                                          │ launchd every 5m (claude CLI)
+        │                                          │ launchd every 30m (claude CLI)
         │                                          ▼
         │                                    instincts/personal/*.md
         │   SessionStart hook ◀── recall-instincts.sh ──┘  (injects learned prefs)
