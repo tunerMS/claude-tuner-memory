@@ -5,8 +5,6 @@ claude их только ВОЗВРАЩАЕТ текстом — файлы пи
 (не нужны разрешения на запись в фоновом `claude --print`).
 
 stdin: {"instincts":[{id,title,trigger,confidence,domain,action,evidence}, ...]}
-Дедуп-контракт analyze.sh: объект может прийти как {id, confidence} БЕЗ остальных
-полей — это подтверждение уже известного паттерна, поля берём из существующего файла.
 """
 import sys, os, re, json, datetime
 
@@ -30,24 +28,14 @@ def read_conf(path):
         return None
 
 
-def read_fields(path):
-    """Поля существующего инстинкта — фолбэки, чтобы id-only апдейт их не затёр."""
-    try:
-        txt = open(path, encoding="utf-8").read()
-    except Exception:
-        return {}
-
-    def rx(pattern, flags=0):
-        m = re.search(pattern, txt, flags)
-        return (m.group(1) if m else "").strip()
-
-    return {
-        "title": rx(r'^# (.+)$', re.M),
-        "trigger": rx(r'^trigger:\s*"?(.*?)"?\s*$', re.M),
-        "domain": rx(r'^domain:\s*(\S+)', re.M),
-        "action": rx(r'## Action\n(.*?)(?:\n## |\Z)', re.S),
-        "evidence": rx(r'## Evidence\n(.*?)(?:\n## |\Z)', re.S),
-    }
+def bump_existing(path, conf, today):
+    """Матч существующего инстинкта (модель вернула только id): повышаем
+    confidence и last_observed, НЕ трогая текст — там вручную слитые
+    триггеры/действия после дедупликации, их нельзя перезатирать."""
+    txt = open(path, encoding="utf-8").read()
+    txt = re.sub(r'(?m)^confidence:\s*[0-9.]+', f'confidence: {conf:.2f}', txt, count=1)
+    txt = re.sub(r'(?m)^last_observed:\s*.+', f'last_observed: {today}', txt, count=1)
+    open(path, "w", encoding="utf-8").write(txt)
 
 
 def main():
@@ -80,14 +68,24 @@ def main():
         except (TypeError, ValueError):
             proposed = 0.3
         existing = read_conf(path)
+        has_content = bool((it.get("action") or "").strip() or (it.get("trigger") or "").strip())
+        if existing is not None and not has_content:
+            # дедуп-ответ analyze.sh: только id + confidence → бамп без перезаписи
+            conf = clamp(max(existing, proposed) + 0.05, 0.3, 0.9)
+            bump_existing(path, conf, today)
+            written += 1
+            print(f"  instinct: {iid} (match существующего, conf {conf:.2f})")
+            continue
+        if existing is None and not has_content:
+            print(f"  writer: пропуск {iid} — новый id без action/trigger (пустышку не пишем)")
+            continue
         # повтор паттерна растит уверенность; новый — берём как есть
         conf = clamp(max(existing, proposed) + 0.05, 0.3, 0.9) if existing is not None else proposed
-        old = read_fields(path) if existing is not None else {}
-        title = (it.get("title") or old.get("title") or iid.replace("-", " ").capitalize()).strip()
-        trigger = (it.get("trigger") or old.get("trigger") or "").replace('"', "'").strip()
-        domain = slug(it.get("domain") or old.get("domain") or "general")
-        action = (it.get("action") or old.get("action") or "").strip()
-        evidence = (it.get("evidence") or old.get("evidence") or "").strip()
+        title = (it.get("title") or iid.replace("-", " ").capitalize()).strip()
+        trigger = (it.get("trigger") or "").replace('"', "'").strip()
+        domain = slug(it.get("domain") or "general")
+        action = (it.get("action") or "").strip()
+        evidence = (it.get("evidence") or "").strip()
 
         body = (
             f"---\n"

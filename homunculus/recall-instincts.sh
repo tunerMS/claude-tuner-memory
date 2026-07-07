@@ -44,7 +44,8 @@ lines = [
     "Применяй, когда уместно. Если Михаил поправит — упомяни, это снизит уверенность инстинкта.",
     "",
 ]
-for conf, label, first in items[:40]:
+# Кап: только топ-25 по confidence — держим инжект компактным (~10KB, не 24KB).
+for conf, label, first in items[:25]:
     lines.append(f"- ({conf:.2f}) **{label}** — {first}")
 
 print(json.dumps({
