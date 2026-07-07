@@ -131,6 +131,10 @@ Without a key it skips gracefully. It's never on the background cron.
 cd ~/.claude/memory-tools && PYTHONPATH=. .venv/bin/pytest -q
 ```
 
+## Command reference
+
+Every command in one place — the `mem` CLI, the instinct slash-commands (`/instinct-status`, `/evolve`, …) and the service scripts: [docs/COMMANDS.md](docs/COMMANDS.md) (in Russian).
+
 ## Changelog
 
 Human-readable release notes live in [CHANGELOG.md](CHANGELOG.md) (in Russian, like the rest of the helper docs).
