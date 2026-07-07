@@ -131,6 +131,10 @@ Without a key it skips gracefully. It's never on the background cron.
 cd ~/.claude/memory-tools && PYTHONPATH=. .venv/bin/pytest -q
 ```
 
+## Changelog
+
+Human-readable release notes live in [CHANGELOG.md](CHANGELOG.md).
+
 ## License
 
 [MIT](LICENSE) © 2026 Mikhail Silin (tunerMS)
